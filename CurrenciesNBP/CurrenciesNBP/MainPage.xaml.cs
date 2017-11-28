@@ -14,85 +14,88 @@ using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
 using Windows.Web.Http;
+using System.Threading.Tasks;
+using System.Xml.Linq;
 
 // The Blank Page item template is documented at http://go.microsoft.com/fwlink/?LinkId=234238
 
-namespace CurrenciesNBP
-{
+namespace CurrenciesNBP {
     /// <summary>
     /// An empty page that can be used on its own or navigated to within a Frame.
     /// </summary>
-    public sealed partial class MainPage : Page
-    {
+    public sealed partial class MainPage : Page {
+
         private string selectedYear;
-        public MainPage()
-        {
+        private HttpClient client;
+
+        public MainPage() {
             this.InitializeComponent();
             this.selectedYear = System.DateTime.Now.Year.ToString();
 
-            for (int i = 2002; i <= System.DateTime.Now.Year; i++)
-            {
+            for (int i = 2002; i <= System.DateTime.Now.Year; i++) {
                 comboBox.Items.Add(i.ToString());
             }
             comboBox.SelectedItem = selectedYear;
+
+            client = new HttpClient();
         }
 
-        private void button_Click(object sender, RoutedEventArgs e)
-        {
-            CurrenciesHelper helper = new CurrenciesHelper(selectedYear);
-            string result = helper.GetCurrencyFileCodes();
-            string text = "";
-            foreach (string currencyFileCode in result.Split('\n'))
-            {
+        private async void button_Click(object sender, RoutedEventArgs e) {
+            string generalPath = "http://www.nbp.pl/kursy/xml/";
+            string yearFilePath;
+            string selectedYear = (string) comboBox.SelectedItem;
+
+            if (selectedYear.Equals(System.DateTime.Now.Year.ToString())) {
+                yearFilePath = "dir.txt";
+            } else {
+                yearFilePath = "dir" + selectedYear + ".txt";
+            }
+
+            Uri uriObj = new Uri(generalPath + yearFilePath);
+            string result = await client.GetStringAsync(uriObj);
+
+            foreach (string currencyFileCode in result.Split('\n')) {
                 if (!currencyFileCode.StartsWith("a"))
                     continue;
-                else
-                {
+                else {
                     CurrencyFileCode code = new CurrencyFileCode(currencyFileCode);
                     listView.Items.Add(code);
                 }
-                text += currencyFileCode;
             }
-            textBlock.Text = result;
-
         }
 
-        private void comboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
+        private void comboBox_SelectionChanged(object sender, SelectionChangedEventArgs e) {
             selectedYear = (string) comboBox.SelectedItem;
+            listView.Items.Clear();
+            listViewCurrency.Items.Clear();
         }
 
-        private void listView_ItemClick(object sender, ItemClickEventArgs e)
-        {
+        private void listView_ItemClick(object sender, ItemClickEventArgs e) {
 
-            
+
         }
 
-        private void listView_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            //TODO: Investigate why there is Exception while using HTTPClient second time
-            CurrencyFileCode selectedDate = (CurrencyFileCode)listView.SelectedItem;
+        private async void listView_SelectionChanged(object sender, SelectionChangedEventArgs e) {
+            CurrencyFileCode selectedDate = (CurrencyFileCode) listView.SelectedItem;
             string date = selectedDate.GetDate();
-            Uri uri = new Uri("http://api.nbp.pl/api/exchangerates/tables/a/" + date);
-            HttpClient client = new HttpClient();
+            Uri uri = new Uri("http://api.nbp.pl/api/exchangerates/tables/a/" + date + "?format=xml");    
+            string response = await client.GetStringAsync(uri);
 
-            try
-            {
-                string response = client.GetAsync(uri).GetResults().Content.ToString();
-                Debug.WriteLine(response);
-                textBlock.Text = response;
-            }
-            catch (Exception ex)
-            {
-                Debug.WriteLine(ex.Message + "\n" + ex.StackTrace);
-            }
-            finally
-            {
-                if (client != null)
-                {
-                    client.Dispose();
-                }
-            }
+            XDocument document = XDocument.Load(new StringReader(response));
+            var query =
+                from rate in document.Root.Descendants("Rate")
+                let code = rate.Element("Code")
+                let currency = rate.Element("Currency")
+                let mid = rate.Element("Mid")
+                select new Currency(code.Value, currency.Value, mid.Value);
+
+            listViewCurrency.ItemsSource = query;
+
+            Debug.WriteLine(response);
+            textBlock.Text = response;
+        }
+
+        private void listViewCurrency_SelectionChanged(object sender, SelectionChangedEventArgs e) {
 
         }
     }

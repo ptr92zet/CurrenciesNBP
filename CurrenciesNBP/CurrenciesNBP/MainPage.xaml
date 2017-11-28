@@ -13,6 +13,7 @@
         <ListView x:Name="listView" HorizontalAlignment="Left" Height="550" Margin="70,185,0,0" VerticalAlignment="Top" Width="430" SelectionChanged="listView_SelectionChanged"/>
         <ComboBox x:Name="comboBox" HorizontalAlignment="Left" Margin="230,30,0,0" VerticalAlignment="Top" Width="275" Height="55" SelectionChanged="comboBox_SelectionChanged"/>
         <TextBlock x:Name="textBlock1" HorizontalAlignment="Left" Margin="78,46,0,0" TextWrapping="Wrap" Text="Choose year:" VerticalAlignment="Top" FontSize="24"/>
+        <ListView x:Name="listViewCurrency" HorizontalAlignment="Left" Height="550" Margin="520,170,0,0" VerticalAlignment="Top" Width="430" SelectionChanged="listViewCurrency_SelectionChanged"/>
 
     </Grid>
 </Page>
