@@ -91,7 +91,7 @@ namespace CurrenciesNBP {
                 let code = rate.Element("Code")
                 let currency = rate.Element("Currency")
                 let mid = rate.Element("Mid")
-                select new Currency(code.Value, currency.Value, mid.Value, date);
+                select new Currency() { Code = code.Value, Name = currency.Value, Mid = mid.Value, Date = date };
             currencyRatings = new ObservableCollection<Currency>(query);
             listViewCurrency.ItemsSource = currencyRatings;
         }
