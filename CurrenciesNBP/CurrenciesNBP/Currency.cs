@@ -10,19 +10,21 @@ namespace CurrenciesNBP
 {
     class Currency
     {
-        private string code { get; }
-        private string currency { get; }
-        private string mid { get; }
+        private string Code { get; }
+        private string Name { get; }
+        private string Mid { get; }
+        private string Date { get; }
 
-        public Currency(string readCode, string readCurrency, string readMid) {
-            this.code = readCode;
-            this.currency = readCurrency;
-            this.mid = readMid;
+        public Currency(string readCode, string readName, string readMid, string selectedDate) {
+            this.Code = readCode;
+            this.Name = readName;
+            this.Mid = readMid;
+            this.Date = selectedDate;
         }
 
         override
         public string ToString() {
-            return code.ToUpper() + " [" + currency + "] -> " + mid;
+            return Code.ToUpper() + " [" + Name + "] -> " + Mid + "\n" + Date;
         }
     }
 }

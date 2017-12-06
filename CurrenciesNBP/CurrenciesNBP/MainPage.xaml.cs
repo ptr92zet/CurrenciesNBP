@@ -41,6 +41,8 @@ namespace CurrenciesNBP {
         }
 
         private async void button_Click(object sender, RoutedEventArgs e) {
+            listView.Items.Clear();
+
             string generalPath = "http://www.nbp.pl/kursy/xml/";
             string yearFilePath;
             string selectedYear = (string) comboBox.SelectedItem;
@@ -66,19 +68,14 @@ namespace CurrenciesNBP {
 
         private void comboBox_SelectionChanged(object sender, SelectionChangedEventArgs e) {
             selectedYear = (string) comboBox.SelectedItem;
-            listView.Items.Clear();
-            listViewCurrency.Items.Clear();
+            listViewCurrency.ItemsSource = null;
         }
 
-        private void listView_ItemClick(object sender, ItemClickEventArgs e) {
-
-
-        }
-
-        private async void listView_SelectionChanged(object sender, SelectionChangedEventArgs e) {
-            CurrencyFileCode selectedDate = (CurrencyFileCode) listView.SelectedItem;
+        private async void listView_ItemClick(object sender, ItemClickEventArgs e) {
+            CurrencyFileCode selectedDate = (CurrencyFileCode) e.ClickedItem;
+            listView.SelectedItem = selectedDate;
             string date = selectedDate.GetDate();
-            Uri uri = new Uri("http://api.nbp.pl/api/exchangerates/tables/a/" + date + "?format=xml");    
+            Uri uri = new Uri("http://api.nbp.pl/api/exchangerates/tables/a/" + date + "?format=xml");
             string response = await client.GetStringAsync(uri);
 
             XDocument document = XDocument.Load(new StringReader(response));
@@ -87,16 +84,9 @@ namespace CurrenciesNBP {
                 let code = rate.Element("Code")
                 let currency = rate.Element("Currency")
                 let mid = rate.Element("Mid")
-                select new Currency(code.Value, currency.Value, mid.Value);
+                select new Currency(code.Value, currency.Value, mid.Value, date);
 
             listViewCurrency.ItemsSource = query;
-
-            Debug.WriteLine(response);
-            textBlock.Text = response;
-        }
-
-        private void listViewCurrency_SelectionChanged(object sender, SelectionChangedEventArgs e) {
-
         }
     }
 }
