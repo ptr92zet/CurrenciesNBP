@@ -113,7 +113,7 @@
     <Compile Include="Common\RelayCommand.cs" />
     <Compile Include="Common\SuspensionManager.cs" />
     <Compile Include="Currency.cs" />
-    <Compile Include="CurrencyFileCode.cs" />
+    <Compile Include="CurrencyFile.cs" />
     <Compile Include="MainPage.xaml.cs">
       <DependentUpon>MainPage.xaml</DependentUpon>
     </Compile>

@@ -13,6 +13,10 @@
     <Page.Resources>
         <!-- TODO: Delete this line if the key AppName is declared in App.xaml -->
         <x:String x:Key="AppName">CurrenciesNBP</x:String>
+        <x:String x:Key="ComboBoxText">Choose year:</x:String>
+        <x:String x:Key="ButtonText">Search for available currency ratings</x:String>
+        <x:String x:Key="CurrencyFilesHeader">Currency ratings per day:</x:String>
+        <x:String x:Key="RatingsHeader">Currency ratings for selected date:</x:String>
     </Page.Resources>
 
     <!--
@@ -38,22 +42,16 @@
                 <ColumnDefinition Width="120"/>
                 <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
-            <Button x:Name="backButton" Margin="40,25,0,0" Command="{Binding NavigationHelper.GoBackCommand, ElementName=pageRoot}"
-                        Style="{StaticResource NavigationBackButtonNormalStyle}"
-                        VerticalAlignment="Top"
-                        AutomationProperties.Name="Back"
-                        AutomationProperties.AutomationId="BackButton"
-                        AutomationProperties.ItemType="Navigation Button"/>
             <TextBlock x:Name="pageTitle" Text="{StaticResource AppName}" Style="{StaticResource HeaderTextBlockStyle}" Grid.Column="1" 
                         IsHitTestVisible="false" TextWrapping="NoWrap" VerticalAlignment="Bottom" Margin="9,0,21,30" FontSize="42.667"/>
         </Grid>
 
         <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}" Grid.Row="2">
-            <Button x:Name="button" Content="Lookup dates" HorizontalAlignment="Left" Margin="682,17,0,0" VerticalAlignment="Top" Height="63" Width="441" Click="button_Click" FontSize="24"/>
-            <ListView x:Name="listView" HorizontalAlignment="Left" Height="530" Margin="70,100,0,0" VerticalAlignment="Top" Width="510" ItemClick="listView_ItemClick" IsItemClickEnabled="True" Header="Dates:"/>
-            <ComboBox x:Name="comboBox" HorizontalAlignment="Left" Margin="245,20,0,0" VerticalAlignment="Top" Width="275" Height="55" SelectionChanged="comboBox_SelectionChanged"/>
-            <TextBlock x:Name="textBlock1" HorizontalAlignment="Left" Margin="85,31,0,0" TextWrapping="Wrap" Text="Choose year:" VerticalAlignment="Top" FontSize="24"/>
-            <ListView x:Name="listViewCurrency" HorizontalAlignment="Left" Height="530" Margin="610,100,0,0" VerticalAlignment="Top" Width="725" Header="Currency rates:"/>
+            <Button x:Name="button" Content="{StaticResource ButtonText}" HorizontalAlignment="Left" Margin="682,17,0,0" VerticalAlignment="Top" Height="63" Width="441" Click="button_Click" FontSize="24"/>
+            <ListView x:Name="listView" HorizontalAlignment="Left" Height="530" Margin="70,100,0,0" VerticalAlignment="Top" Width="510" ItemsSource="{Binding}" ItemClick="listView_ItemClick" IsItemClickEnabled="True" Header="{StaticResource CurrencyFilesHeader}"/>
+            <ComboBox x:Name="comboBox" HorizontalAlignment="Left" Margin="245,20,0,0" VerticalAlignment="Top" Width="275" Height="55" ItemsSource="{Binding}" SelectionChanged="comboBox_SelectionChanged"/>
+            <TextBlock x:Name="textBlock1" HorizontalAlignment="Left" Margin="85,31,0,0" TextWrapping="Wrap" Text="{StaticResource ComboBoxText}" VerticalAlignment="Top" FontSize="24"/>
+            <ListView x:Name="listViewCurrency" HorizontalAlignment="Left" Height="530" Margin="610,100,0,0" VerticalAlignment="Top" Width="725" ItemsSource="{Binding}" Header="{StaticResource CurrencyFilesHeader}"/>
 
 
 

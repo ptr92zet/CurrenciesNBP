@@ -16,6 +16,7 @@ using Windows.UI.Xaml.Navigation;
 using Windows.Web.Http;
 using System.Threading.Tasks;
 using System.Xml.Linq;
+using System.Collections.ObjectModel;
 
 // The Blank Page item template is documented at http://go.microsoft.com/fwlink/?LinkId=234238
 
@@ -26,22 +27,28 @@ namespace CurrenciesNBP {
     public sealed partial class MainPage : Page {
 
         private string selectedYear;
+        private ObservableCollection<string> years = new ObservableCollection<string>();
         private HttpClient client;
 
         public MainPage() {
             this.InitializeComponent();
+            this.preConfigure();
+        }
+
+        private void preConfigure() {
             this.selectedYear = System.DateTime.Now.Year.ToString();
 
             for (int i = 2002; i <= System.DateTime.Now.Year; i++) {
-                comboBox.Items.Add(i.ToString());
+                years.Add(i.ToString());
             }
+            comboBox.DataContext = years;
             comboBox.SelectedItem = selectedYear;
 
             client = new HttpClient();
         }
-
         private async void button_Click(object sender, RoutedEventArgs e) {
-            listView.Items.Clear();
+            ObservableCollection<CurrencyFile> currencyFiles = new ObservableCollection<CurrencyFile>();
+            listView.ItemsSource = currencyFiles;
 
             string generalPath = "http://www.nbp.pl/kursy/xml/";
             string yearFilePath;
@@ -60,21 +67,21 @@ namespace CurrenciesNBP {
                 if (!currencyFileCode.StartsWith("a"))
                     continue;
                 else {
-                    CurrencyFileCode code = new CurrencyFileCode(currencyFileCode);
-                    listView.Items.Add(code);
+                    CurrencyFile code = new CurrencyFile(currencyFileCode);
+                    currencyFiles.Add(code);
                 }
             }
         }
 
         private void comboBox_SelectionChanged(object sender, SelectionChangedEventArgs e) {
             selectedYear = (string) comboBox.SelectedItem;
-            listViewCurrency.ItemsSource = null;
         }
 
         private async void listView_ItemClick(object sender, ItemClickEventArgs e) {
-            CurrencyFileCode selectedDate = (CurrencyFileCode) e.ClickedItem;
+            ObservableCollection<Currency> currencyRatings = new ObservableCollection<Currency>();
+            CurrencyFile selectedDate = (CurrencyFile) e.ClickedItem;
             listView.SelectedItem = selectedDate;
-            string date = selectedDate.GetDate();
+            string date = selectedDate.GetFileDate();
             Uri uri = new Uri("http://api.nbp.pl/api/exchangerates/tables/a/" + date + "?format=xml");
             string response = await client.GetStringAsync(uri);
 
@@ -85,8 +92,8 @@ namespace CurrenciesNBP {
                 let currency = rate.Element("Currency")
                 let mid = rate.Element("Mid")
                 select new Currency(code.Value, currency.Value, mid.Value, date);
-
-            listViewCurrency.ItemsSource = query;
+            currencyRatings = new ObservableCollection<Currency>(query);
+            listViewCurrency.ItemsSource = currencyRatings;
         }
     }
 }
