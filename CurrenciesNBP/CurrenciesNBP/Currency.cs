@@ -14,17 +14,5 @@ namespace CurrenciesNBP
         public string Name { get; set; }
         public string Mid { get; set; }
         public string Date { get; set; }
-
-        //public Currency(string readCode, string readName, string readMid, string selectedDate) {
-        //    Code = readCode.ToUpper();
-        //    Name = "[" + readName + "]";
-        //    Mid = readMid;
-        //    Date = selectedDate;
-        //}
-
-        override
-        public string ToString() {
-            return Code + " " + Name + " -> " + Mid + "\n" + Date;
-        }
     }
 }
